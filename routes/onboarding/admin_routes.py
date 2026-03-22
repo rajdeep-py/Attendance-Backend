@@ -17,6 +17,7 @@ class AdminLogin(BaseModel):
 	email: str
 	password: str
 
+
 # Admin registration endpoint
 @router.post("/admin/register")
 def register_admin(admin: AdminCreate, db: Session = Depends(get_db)):
@@ -28,7 +29,12 @@ def register_admin(admin: AdminCreate, db: Session = Depends(get_db)):
 	db.add(new_admin)
 	db.commit()
 	db.refresh(new_admin)
-	return {"admin_id": new_admin.admin_id, "email": new_admin.email}
+	return {
+		"message": "Admin registered successfully",
+		"admin_id": new_admin.admin_id,
+		"email": new_admin.email
+	}
+
 
 # Admin login endpoint
 @router.post("/admin/login")
@@ -37,7 +43,11 @@ def login_admin(admin: AdminLogin, db: Session = Depends(get_db)):
 	user = db.query(AdminUser).filter(AdminUser.email == admin.email).first()
 	if not user or user.password != admin.password:
 		raise HTTPException(status_code=401, detail="Invalid credentials")
-	return {"admin_id": user.admin_id, "email": user.email}
+	return {
+		"message": "Login successful",
+		"admin_id": user.admin_id,
+		"email": user.email
+	}
 
 # Admin logout endpoint (placeholder, as actual session management is not implemented)
 @router.post("/admin/logout")
