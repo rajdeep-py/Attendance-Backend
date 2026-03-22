@@ -3,7 +3,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from routes.onboarding import admin_routes
-from models.onboarding.admin_models import Base
+from models.base import Base
 
 from sqlalchemy.orm import Session
 from db import get_db, engine
@@ -29,6 +29,7 @@ def health_check():
 	return {"status": "ok"}
 
 # Create tables on startup
+
 @app.on_event("startup")
 def on_startup():
 	print("Creating database tables if not exist...")
@@ -36,8 +37,13 @@ def on_startup():
 	print("Database tables ready.")
 
 
+
 # Include admin routes
 app.include_router(admin_routes.router)
+
+# Include notification routes
+from routes.notification import notification_routes
+app.include_router(notification_routes.router)
 
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":

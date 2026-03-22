@@ -1,9 +1,8 @@
 # from sqlalchemy and datetime imports
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
+from models.base import Base
 from datetime import datetime
 
-Base = declarative_base()
 
 class AdminUser(Base):
 	__tablename__ = 'admin_users'
