@@ -51,6 +51,11 @@ app.include_router(notification_routes.router)
 from routes.location_matrix import location_matrix_routes
 app.include_router(location_matrix_routes.router)
 
+
+# Include help center routes
+from routes.help_center import help_center_routes
+app.include_router(help_center_routes.router)
+
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
 	import uvicorn
