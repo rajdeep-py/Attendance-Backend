@@ -61,6 +61,11 @@ app.include_router(help_center_routes.router)
 from routes.holidays import holiday_routes
 app.include_router(holiday_routes.router)
 
+
+# Include employee routes
+from routes.onboarding import employee_routes
+app.include_router(employee_routes.router)
+
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
 	import uvicorn
