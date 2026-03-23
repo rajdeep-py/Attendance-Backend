@@ -32,6 +32,7 @@ def create_holiday(data: HolidayCreate, db: Session = Depends(get_db)):
     db.add(holiday)
     db.commit()
     db.refresh(holiday)
+    return holiday
     return {"message": "Holiday created", "holiday_id": holiday.holiday_id}
 
 # Get holiday by admin_id and holiday_id
