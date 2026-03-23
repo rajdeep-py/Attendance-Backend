@@ -66,6 +66,10 @@ app.include_router(holiday_routes.router)
 from routes.onboarding import employee_routes
 app.include_router(employee_routes.router)
 
+# Include salary slip routes
+from routes.salary_slip import salary_slip_routes
+app.include_router(salary_slip_routes.router)
+
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
 	import uvicorn
