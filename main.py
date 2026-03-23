@@ -56,6 +56,11 @@ app.include_router(location_matrix_routes.router)
 from routes.help_center import help_center_routes
 app.include_router(help_center_routes.router)
 
+
+# Include holiday routes
+from routes.holidays import holiday_routes
+app.include_router(holiday_routes.router)
+
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
 	import uvicorn
