@@ -4,6 +4,7 @@ from models.salary_slip.salary_slip_models import SalarySlip
 from db import get_db
 import os
 from datetime import datetime
+from fastapi.responses import FileResponse
 
 router = APIRouter()
 
@@ -89,6 +90,16 @@ async def update_salary_slip(
 	db.commit()
 	db.refresh(slip)
 	return {"message": "Salary slip updated", "slip_id": slip.slip_id, "salary_slip_url": slip.salary_slip_url}
+
+
+
+# Get salary slip PDF file by employee_id and slip_id
+@router.get("/salary_slip/pdf/{employee_id}/{slip_id}")
+def get_salary_slip_pdf(employee_id: int, slip_id: int, db: Session = Depends(get_db)):
+	slip = db.query(SalarySlip).filter(SalarySlip.slip_id == slip_id, SalarySlip.employee_id == employee_id).first()
+	if not slip or not slip.salary_slip_url or not os.path.exists(slip.salary_slip_url):
+		raise HTTPException(status_code=404, detail="Salary slip PDF not found")
+	return FileResponse(slip.salary_slip_url, media_type="application/pdf", filename="slip.pdf")
 
 
 # Delete salary slip by slip_id
