@@ -14,7 +14,7 @@ UPLOAD_DIR = "uploads/attendance"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Helper to check if location is within allowed radius (in meters)
-def is_within_radius(lat1, lon1, lat2, lon2, radius=10):
+def is_within_radius(lat1, lon1, lat2, lon2, radius=50):
     from math import radians, cos, sin, asin, sqrt
     # Haversine formula
     R = 6371000  # Earth radius in meters
