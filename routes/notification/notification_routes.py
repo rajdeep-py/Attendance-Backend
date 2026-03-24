@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from models.notification.notification_models import Notification, Base
+from models.onboarding.employee_models import EmployeeUser
 from db import get_db
 
 router = APIRouter()
@@ -34,6 +35,15 @@ def get_all_notifications(db: Session = Depends(get_db)):
 @router.get("/notifications/admin/{admin_id}")
 def get_notifications_by_admin(admin_id: int, db: Session = Depends(get_db)):
 	notifs = db.query(Notification).filter(Notification.admin_id == admin_id).all()
+	return notifs
+
+# Get notifications for an employee by employee_id (using their admin_id)
+@router.get("/notifications/employee/{employee_id}")
+def get_notifications_for_employee(employee_id: int, db: Session = Depends(get_db)):
+	employee = db.query(EmployeeUser).filter(EmployeeUser.employee_id == employee_id).first()
+	if not employee:
+		raise HTTPException(status_code=404, detail="Employee not found")
+	notifs = db.query(Notification).filter(Notification.admin_id == employee.admin_id).all()
 	return notifs
 
 # Update notification by admin_id and notification_id

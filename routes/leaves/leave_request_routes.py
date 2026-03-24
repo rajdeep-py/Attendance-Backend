@@ -42,6 +42,11 @@ def get_leave_requests_by_employee(employee_id: int, db: Session = Depends(get_d
 def get_leave_requests_by_admin(admin_id: int, db: Session = Depends(get_db)):
     return db.query(LeaveRequest).filter(LeaveRequest.admin_id == admin_id).all()
 
+# Get all leave requests by admin_id and employee_id
+@router.get("/get-all/leave_requests/admin/{admin_id}/employee/{employee_id}")
+def get_leave_requests_by_admin_and_employee(admin_id: int, employee_id: int, db: Session = Depends(get_db)):
+    return db.query(LeaveRequest).filter(LeaveRequest.admin_id == admin_id, LeaveRequest.employee_id == employee_id).all()
+
 # Update leave request by leave_id
 @router.put("/update/leave_requests/{leave_id}")
 def update_leave_request(leave_id: int, update: LeaveRequestUpdate, db: Session = Depends(get_db)):
