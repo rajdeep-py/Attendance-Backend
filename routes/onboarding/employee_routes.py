@@ -6,10 +6,20 @@ from db import get_db
 import os
 from PIL import Image
 
+
+from fastapi import status
+from pydantic import BaseModel
+
 router = APIRouter()
 
 UPLOAD_DIR = "uploads/profile_photo"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+# Employee login model
+class EmployeeLogin(BaseModel):
+    phone_no: str
+    password: str
 
 class EmployeeCreate(BaseModel):
     admin_id: int
@@ -55,6 +65,15 @@ async def save_profile_photo(employee_id: int, full_name: str, file: UploadFile)
     img = img.convert("RGB")
     img.save(file_path, optimize=True, quality=70)
     return file_path
+
+# Create employee
+@router.post("/login/employees/")
+def login_employee(login: EmployeeLogin, db: Session = Depends(get_db)):
+    employee = db.query(EmployeeUser).filter(EmployeeUser.phone_no == login.phone_no).first()
+    if not employee or employee.password != login.password:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    return {"message": "Login successful", "employee_id": employee.employee_id, "admin_id": employee.admin_id, "full_name": employee.full_name}
+
 
 # Create employee
 @router.post("/create/employees/")
