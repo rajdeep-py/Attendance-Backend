@@ -57,7 +57,7 @@ async def save_profile_photo(employee_id: int, full_name: str, file: UploadFile)
     return file_path
 
 # Create employee
-@router.post("/employees/")
+@router.post("/create/employees/")
 async def create_employee(
     admin_id: int = Form(...),
     full_name: str = Form(...),
@@ -97,12 +97,12 @@ async def create_employee(
     return {"message": "Employee created", "employee_id": employee.employee_id}
 
 # Get all employees by admin_id
-@router.get("/employees/admin/{admin_id}")
+@router.get("/get-all/employees/admin/{admin_id}")
 def get_employees_by_admin(admin_id: int, db: Session = Depends(get_db)):
     return db.query(EmployeeUser).filter(EmployeeUser.admin_id == admin_id).all()
 
 # Get employee by employee_id
-@router.get("/employees/{employee_id}")
+@router.get("/get-by/employees/{employee_id}")
 def get_employee_by_id(employee_id: int, db: Session = Depends(get_db)):
     employee = db.query(EmployeeUser).filter(EmployeeUser.employee_id == employee_id).first()
     if not employee:
@@ -110,7 +110,7 @@ def get_employee_by_id(employee_id: int, db: Session = Depends(get_db)):
     return employee
 
 # Update employee by employee_id (self-update)
-@router.put("/employees/{employee_id}")
+@router.put("/update/employees/{employee_id}")
 async def update_employee_by_id(
     employee_id: int,
     full_name: str = Form(None),
@@ -142,7 +142,7 @@ async def update_employee_by_id(
     return {"message": "Employee updated", "employee_id": employee.employee_id}
 
 # Update employee by admin_id and employee_id
-@router.put("/employees/{employee_id}/admin/{admin_id}")
+@router.put("/update-by/employees/{employee_id}/admin/{admin_id}")
 async def update_employee_by_admin(
     employee_id: int,
     admin_id: int,
@@ -173,7 +173,7 @@ async def update_employee_by_admin(
     return {"message": "Employee updated", "employee_id": employee.employee_id}
 
 # Delete employee by admin_id and employee_id
-@router.delete("/employees/{employee_id}/admin/{admin_id}")
+@router.delete("/delete/employees/{employee_id}/admin/{admin_id}")
 def delete_employee(employee_id: int, admin_id: int, db: Session = Depends(get_db)):
     employee = db.query(EmployeeUser).filter(EmployeeUser.employee_id == employee_id, EmployeeUser.admin_id == admin_id).first()
     if not employee:
