@@ -3,7 +3,6 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from routes.onboarding import admin_routes
 from models.base import Base
 from models.onboarding.admin_models import AdminUser
 
@@ -44,6 +43,7 @@ def on_startup():
 
 
 # Include admin routes
+from routes.onboarding import admin_routes
 app.include_router(admin_routes.router)
 
 # Include notification routes
@@ -77,6 +77,10 @@ app.include_router(salary_slip_routes.router)
 # Include leave request routes
 from routes.leaves import leave_request_routes
 app.include_router(leave_request_routes.router)
+
+# Include attendance routes
+from routes.attendance import attendance_routes
+app.include_router(attendance_routes.router)
 
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
