@@ -5,8 +5,7 @@ from models.onboarding.employee_models import EmployeeUser
 from db import get_db
 import os
 from PIL import Image
-
-
+from sqlalchemy.exc import IntegrityError
 from fastapi import status
 from pydantic import BaseModel
 
@@ -106,7 +105,13 @@ async def create_employee(
         ifsc_code=ifsc_code
     )
     db.add(employee)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        if "unique constraint" in str(e).lower() or "unique violation" in str(e).lower():
+            raise HTTPException(status_code=400, detail="Phone number already registered")
+        raise
     db.refresh(employee)
     if profile_photo:
         file_path = await save_profile_photo(employee.employee_id, full_name, profile_photo)
@@ -156,7 +161,13 @@ async def update_employee_by_id(
     if profile_photo:
         file_path = await save_profile_photo(employee.employee_id, employee.full_name, profile_photo)
         employee.profile_photo = file_path
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        if "unique constraint" in str(e).lower() or "unique violation" in str(e).lower():
+            raise HTTPException(status_code=400, detail="Phone number already registered")
+        raise
     db.refresh(employee)
     return {"message": "Employee updated", "employee_id": employee.employee_id}
 
