@@ -70,6 +70,10 @@ app.include_router(employee_routes.router)
 from routes.salary_slip import salary_slip_routes
 app.include_router(salary_slip_routes.router)
 
+# Include leave request routes
+from routes.leaves import leave_request_routes
+app.include_router(leave_request_routes.router)
+
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
 	import uvicorn
