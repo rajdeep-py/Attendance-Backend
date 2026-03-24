@@ -89,3 +89,17 @@ async def update_salary_slip(
 	db.commit()
 	db.refresh(slip)
 	return {"message": "Salary slip updated", "slip_id": slip.slip_id, "salary_slip_url": slip.salary_slip_url}
+
+
+# Delete salary slip by slip_id
+@router.delete("/salary_slip/{slip_id}")
+def delete_salary_slip(slip_id: int, db: Session = Depends(get_db)):
+	slip = db.query(SalarySlip).filter(SalarySlip.slip_id == slip_id).first()
+	if not slip:
+		raise HTTPException(status_code=404, detail="Salary slip not found")
+	# Remove the PDF file if exists
+	if slip.salary_slip_url and os.path.exists(slip.salary_slip_url):
+		os.remove(slip.salary_slip_url)
+	db.delete(slip)
+	db.commit()
+	return {"message": "Salary slip deleted"}

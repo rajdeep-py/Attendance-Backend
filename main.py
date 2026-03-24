@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from routes.onboarding import admin_routes
 from models.base import Base
 from models.onboarding.admin_models import AdminUser
@@ -11,6 +12,9 @@ from db import get_db, engine
 
 
 app = FastAPI()
+
+# Serve static files from uploads directory
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # CORS middleware
 app.add_middleware(
