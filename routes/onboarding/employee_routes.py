@@ -169,7 +169,8 @@ async def update_employee_by_id(
             raise HTTPException(status_code=400, detail="Phone number already registered")
         raise
     db.refresh(employee)
-    return {"message": "Employee updated", "employee_id": employee.employee_id}
+    # Return the updated employee profile as dict
+    return employee
 
 # Update employee by admin_id and employee_id
 @router.put("/update-by/employees/{employee_id}/admin/{admin_id}")
