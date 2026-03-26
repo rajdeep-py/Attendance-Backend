@@ -85,6 +85,10 @@ app.include_router(leave_request_routes.router)
 from routes.attendance import attendance_routes
 app.include_router(attendance_routes.router)
 
+# Include routine routes
+from routes.routine import routine_routes
+app.include_router(routine_routes.router)
+
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
 	import uvicorn
