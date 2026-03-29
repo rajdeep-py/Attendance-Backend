@@ -95,14 +95,7 @@ async def check_out(
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     admin_id = employee.admin_id
-    # Get allowed locations for admin
-    allowed_locations = db.query(LocationMatrix).filter(LocationMatrix.admin_id == admin_id).all()
-    if not allowed_locations:
-        raise HTTPException(status_code=400, detail="No allowed locations set by admin")
-    # Check if current location is within any allowed location (100m radius)
-    valid = any(is_within_radius(latitude, longitude, loc.latitude, loc.longitude) for loc in allowed_locations)
-    if not valid:
-        raise HTTPException(status_code=403, detail="Current location not allowed for check-out")
+    # Location radius constraint is not required for check-out
     # Save photo
     now = datetime.utcnow()
     date_str = attendance.date.isoformat() if hasattr(attendance, 'date') and attendance.date else now.date().isoformat()
