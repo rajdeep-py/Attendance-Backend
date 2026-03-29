@@ -59,6 +59,11 @@ from routes.location_matrix import location_matrix_routes
 app.include_router(location_matrix_routes.router)
 
 
+
+# Include break time routes
+from routes.break_time import break_time_routes
+app.include_router(break_time_routes.router)
+
 # Include help center routes
 from routes.help_center import help_center_routes
 app.include_router(help_center_routes.router)
