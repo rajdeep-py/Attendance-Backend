@@ -37,8 +37,8 @@ def health_check():
 @app.on_event("startup")
 def on_startup():
 	print("Creating database tables if not exist...")
-	Base.metadata.create_all(bind=engine)
-	print("Database tables ready.")
+	# Base.metadata.create_all(bind=engine)
+	print("Database tables ready for alembic migrations.")
 
 
 # Include admin routes
@@ -86,6 +86,10 @@ app.include_router(attendance_routes.router)
 
 from routes.break_time import break_time_routes
 app.include_router(break_time_routes.router)
+
+# Include current location routes
+from routes.current_location import current_location_routes
+app.include_router(current_location_routes.router)
 
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
