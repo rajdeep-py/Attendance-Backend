@@ -58,12 +58,6 @@ app.include_router(notification_routes.router)
 from routes.location_matrix import location_matrix_routes
 app.include_router(location_matrix_routes.router)
 
-
-
-# Include break time routes
-from routes.break_time import break_time_routes
-app.include_router(break_time_routes.router)
-
 # Include help center routes
 from routes.help_center import help_center_routes
 app.include_router(help_center_routes.router)
@@ -89,10 +83,6 @@ app.include_router(leave_request_routes.router)
 # Include attendance routes
 from routes.attendance import attendance_routes
 app.include_router(attendance_routes.router)
-
-# Include routine routes
-from routes.routine import routine_routes
-app.include_router(routine_routes.router)
 
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
