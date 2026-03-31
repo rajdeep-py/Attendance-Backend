@@ -47,7 +47,7 @@ app.include_router(admin_routes.router)
 
 # Include app update routes
 from routes.force_update import app_update_routes
-app.include_router(app_update_routes.router, prefix="/app-updates")
+app.include_router(app_update_routes.router)
 
 # Include notification routes
 from routes.notification import notification_routes

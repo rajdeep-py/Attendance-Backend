@@ -3,3 +3,5 @@ __pycache__/
 .env
 venv/
 uploads/
+apk-builds/
+.DS_Store

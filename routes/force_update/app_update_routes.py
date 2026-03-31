@@ -5,6 +5,9 @@ from fastapi.responses import FileResponse, JSONResponse
 router = APIRouter()
 
 APK_DIR = os.path.join(os.getcwd(), "apk-builds")
+
+print(f"APK_DIR resolved to: {APK_DIR}")
+
 def get_apk_versions():
     files = []
     if os.path.isdir(APK_DIR):
@@ -56,5 +59,5 @@ def get_latest_version():
     return {
         "version": version_num,
         "apk_file": latest,
-        "apk_url": f"/mr-app-updates/download/{latest}"
+        "apk_url": f"/download/{latest}"
     }
