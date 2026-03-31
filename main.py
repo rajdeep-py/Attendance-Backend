@@ -84,6 +84,9 @@ app.include_router(leave_request_routes.router)
 from routes.attendance import attendance_routes
 app.include_router(attendance_routes.router)
 
+from routes.break_time import break_time_routes
+app.include_router(break_time_routes.router)
+
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
 	import uvicorn
