@@ -22,5 +22,5 @@ RUN mkdir -p /app/uploads /app/assets
 # Expose port 8015 for the FastAPI application
 EXPOSE 8015
 
-# Start the application (no --reload in production)
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8015"]
+# Run Alembic migrations, then start the application (no --reload in production)
+CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8015"]

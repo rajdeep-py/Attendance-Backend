@@ -46,7 +46,8 @@ services:
     ports:
       - "8015:8015"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - atx_net
     volumes:
