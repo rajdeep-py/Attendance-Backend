@@ -8,6 +8,7 @@ from PIL import Image
 from sqlalchemy.exc import IntegrityError
 from fastapi import status
 from pydantic import BaseModel
+from typing import Optional
 
 router = APIRouter()
 
@@ -28,10 +29,10 @@ class EmployeeCreate(BaseModel):
     address: str
     designation: str
     password: str
-    bank_account_no: str
-    bank_name: str
-    branch_name: str
-    ifsc_code: str
+    bank_account_no: Optional[str] = None
+    bank_name: Optional[str] = None
+    branch_name: Optional[str] = None
+    ifsc_code: Optional[str] = None
 
 class EmployeeUpdate(BaseModel):
     full_name: str = None
@@ -84,10 +85,10 @@ async def create_employee(
     address: str = Form(...),
     designation: str = Form(...),
     password: str = Form(...),
-    bank_account_no: str = Form(...),
-    bank_name: str = Form(...),
-    branch_name: str = Form(...),
-    ifsc_code: str = Form(...),
+    bank_account_no: Optional[str] = Form(None),
+    bank_name: Optional[str] = Form(None),
+    branch_name: Optional[str] = Form(None),
+    ifsc_code: Optional[str] = Form(None),
     profile_photo: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
