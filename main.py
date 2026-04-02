@@ -91,6 +91,14 @@ app.include_router(break_time_routes.router)
 from routes.current_location import current_location_routes
 app.include_router(current_location_routes.router)
 
+# Include terms & conditions routes
+from routes.terms_conditions import terms_conditions_routes
+app.include_router(terms_conditions_routes.router)
+
+# Include privacy policy routes
+from routes.privacy_policy import privacy_policy_routes
+app.include_router(privacy_policy_routes.router)
+
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
 	import uvicorn
