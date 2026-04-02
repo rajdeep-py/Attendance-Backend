@@ -2,18 +2,42 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from models.onboarding.employee_models import EmployeeUser
+from models.attendance.attendance_models import Attendance
+from models.break_time.break_time_models import BreakTime
+from models.current_location.current_location_models import CurrentLocation
+from models.leaves.leave_request_models import LeaveRequest
+from models.salary_slip.salary_slip_models import SalarySlip
 from db import get_db
 import os
+import shutil
 from PIL import Image
 from sqlalchemy.exc import IntegrityError
 from fastapi import status
-from pydantic import BaseModel
 from typing import Optional
 
 router = APIRouter()
 
 UPLOAD_DIR = "uploads/profile_photo"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+def _safe_remove_file(file_path: str | None) -> None:
+    if not file_path:
+        return
+    try:
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+    except Exception:
+        pass
+
+
+def _safe_remove_dir(dir_path: str | None) -> None:
+    if not dir_path:
+        return
+    try:
+        shutil.rmtree(dir_path, ignore_errors=True)
+    except Exception:
+        pass
 
 
 # Employee login model
@@ -210,12 +234,55 @@ def delete_employee(employee_id: int, admin_id: int, db: Session = Depends(get_d
     employee = db.query(EmployeeUser).filter(EmployeeUser.employee_id == employee_id, EmployeeUser.admin_id == admin_id).first()
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
-    # Remove profile photo directory
-    dir_path = os.path.join(UPLOAD_DIR, str(employee.employee_id))
-    if os.path.exists(dir_path):
-        for f in os.listdir(dir_path):
-            os.remove(os.path.join(dir_path, f))
-        os.rmdir(dir_path)
-    db.delete(employee)
-    db.commit()
-    return {"message": "Employee deleted"}
+
+    cleanup_files: list[str] = []
+    cleanup_dirs: list[str] = [
+        os.path.join("uploads/profile_photo", str(employee.employee_id)),
+        os.path.join("uploads/salary", str(employee.employee_id)),
+        os.path.join("uploads/attendance", str(employee.employee_id)),
+        os.path.join("uploads/break_time", str(employee.employee_id)),
+    ]
+
+    if employee.profile_photo:
+        cleanup_files.append(employee.profile_photo)
+
+    salary_slips = db.query(SalarySlip).filter(SalarySlip.employee_id == employee_id, SalarySlip.admin_id == admin_id).all()
+    for slip in salary_slips:
+        if slip.salary_slip_url:
+            cleanup_files.append(slip.salary_slip_url)
+
+    attendance_rows = db.query(Attendance).filter(Attendance.employee_id == employee_id, Attendance.admin_id == admin_id).all()
+    for row in attendance_rows:
+        if row.check_in_photo:
+            cleanup_files.append(row.check_in_photo)
+        if row.check_out_photo:
+            cleanup_files.append(row.check_out_photo)
+
+    break_rows = db.query(BreakTime).filter(BreakTime.employee_id == employee_id, BreakTime.admin_id == admin_id).all()
+    for row in break_rows:
+        if row.break_in_photo:
+            cleanup_files.append(row.break_in_photo)
+        if row.break_out_photo:
+            cleanup_files.append(row.break_out_photo)
+
+    try:
+        # Delete dependent rows first to avoid FK constraint errors
+        db.query(BreakTime).filter(BreakTime.employee_id == employee_id, BreakTime.admin_id == admin_id).delete(synchronize_session=False)
+        db.query(Attendance).filter(Attendance.employee_id == employee_id, Attendance.admin_id == admin_id).delete(synchronize_session=False)
+        db.query(SalarySlip).filter(SalarySlip.employee_id == employee_id, SalarySlip.admin_id == admin_id).delete(synchronize_session=False)
+        db.query(LeaveRequest).filter(LeaveRequest.employee_id == employee_id, LeaveRequest.admin_id == admin_id).delete(synchronize_session=False)
+        db.query(CurrentLocation).filter(CurrentLocation.employee_id == employee_id, CurrentLocation.admin_id == admin_id).delete(synchronize_session=False)
+
+        db.delete(employee)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    # Remove uploaded files/directories (best-effort)
+    for file_path in set(cleanup_files):
+        _safe_remove_file(file_path)
+    for dir_path in cleanup_dirs:
+        _safe_remove_dir(dir_path)
+
+    return {"message": "Employee and related data deleted"}
