@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Prefer POSTGRES_* env vars when running in Docker; fall back to DB_* or defaults
-DB_USER = os.getenv('DB_USER') or os.getenv('POSTGRES_USER') or 'postgres'
-DB_PASSWORD = os.getenv('DB_PASSWORD') or os.getenv('POSTGRES_PASSWORD') or 'password'
+DB_USER = os.getenv('DB_USER') or os.getenv('POSTGRES_USER') or 'rajdeepdey'
+DB_PASSWORD = os.getenv('DB_PASSWORD') or os.getenv('POSTGRES_PASSWORD') or '2004'
 DB_HOST = os.getenv('DB_HOST') or os.getenv('POSTGRES_HOST') or 'localhost'
 DB_PORT = os.getenv('DB_PORT') or '5432'
-DB_NAME = os.getenv('DB_NAME') or os.getenv('POSTGRES_DB') or 'bhukk_db'
+DB_NAME = os.getenv('DB_NAME') or os.getenv('POSTGRES_DB') or 'mms_hrms_db'
 
 # Construct database URL
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
