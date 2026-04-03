@@ -59,7 +59,7 @@ async def _save_pdf(doc_id: int, pdf: UploadFile) -> tuple[str, str]:
 	return file_path, file_name
 
 
-@router.post("/documentation/")
+@router.post("/create/documentation/")
 async def create_documentation(
 	pdf: UploadFile = File(...),
 	db: Session = Depends(get_db),
@@ -68,9 +68,9 @@ async def create_documentation(
 	db.add(doc)
 	try:
 		db.flush()  # assign doc.id
-		file_path, file_name = await _save_pdf(doc.id, pdf)
+		_, file_name = await _save_pdf(doc.id, pdf)
 		doc.file_name = file_name
-		doc.file_url = file_path
+		doc.file_url = f"/uploads/documentation/{doc.id}/{file_name}"
 		db.commit()
 	except HTTPException:
 		db.rollback()
@@ -83,12 +83,12 @@ async def create_documentation(
 	return doc
 
 
-@router.get("/documentation/")
+@router.get("/get/documentation/")
 def get_all_documentation(db: Session = Depends(get_db)):
 	return db.query(Documentation).order_by(Documentation.created_at.desc()).all()
 
 
-@router.get("/documentation/{id}")
+@router.get("/get/documentation/{id}")
 def get_documentation_by_id(id: int, db: Session = Depends(get_db)):
 	doc = db.query(Documentation).filter(Documentation.id == id).first()
 	if not doc:
@@ -96,7 +96,7 @@ def get_documentation_by_id(id: int, db: Session = Depends(get_db)):
 	return doc
 
 
-@router.put("/documentation/{id}")
+@router.put("/update/documentation/{id}")
 async def update_documentation(
 	id: int,
 	pdf: UploadFile = File(...),
@@ -107,9 +107,9 @@ async def update_documentation(
 		raise HTTPException(status_code=404, detail="Documentation not found")
 
 	try:
-		file_path, file_name = await _save_pdf(doc.id, pdf)
+		_, file_name = await _save_pdf(doc.id, pdf)
 		doc.file_name = file_name
-		doc.file_url = file_path
+		doc.file_url = f"/uploads/documentation/{doc.id}/{file_name}"
 		db.commit()
 	except HTTPException:
 		db.rollback()
@@ -122,13 +122,16 @@ async def update_documentation(
 	return {"message": "Documentation updated", "id": doc.id, "file_url": doc.file_url}
 
 
-@router.delete("/documentation/{id}")
+@router.delete("/delete/documentation/{id}")
 def delete_documentation(id: int, db: Session = Depends(get_db)):
 	doc = db.query(Documentation).filter(Documentation.id == id).first()
 	if not doc:
 		raise HTTPException(status_code=404, detail="Documentation not found")
 
 	file_path = doc.file_url
+	# Support both URL-style ("/uploads/..."), relative path ("uploads/..."), and older absolute paths.
+	if isinstance(file_path, str) and file_path.startswith("/uploads/"):
+		file_path = file_path.lstrip("/")
 	dir_path = os.path.join(UPLOAD_DIR, str(doc.id))
 
 	db.delete(doc)
