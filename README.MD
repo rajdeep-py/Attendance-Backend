@@ -82,6 +82,8 @@ Attendance-Backend/
    ```bash
    pip install -r requirements.txt
    ```
+Create revision (autogenerate): alembic revision --autogenerate -m "add documentation table"
+Then apply it: alembic upgrade head
 
 4. **Configure environment variables**
    - Create a .env file in the root directory with:
