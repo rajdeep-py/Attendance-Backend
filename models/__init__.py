@@ -13,5 +13,6 @@ import models.break_time.break_time_models
 import models.current_location.current_location_models
 import models.terms_conditions.terms_conditions_models
 import models.privacy_policy.privacy_policy_models
+import models.documentation.documentation_models
 
 # This file consolidates all model imports so that Alembic can properly read Base.metadata

@@ -99,6 +99,10 @@ app.include_router(terms_conditions_routes.router)
 from routes.privacy_policy import privacy_policy_routes
 app.include_router(privacy_policy_routes.router)
 
+# Include documentation routes
+from routes.documentation import documentation_routes
+app.include_router(documentation_routes.router)
+
 # Allow running with python main.py on any IP and port
 if __name__ == "__main__":
 	import uvicorn
