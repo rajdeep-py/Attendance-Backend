@@ -50,10 +50,10 @@ class EmployeeCreate(BaseModel):
     admin_id: int
     full_name: str
     phone_no: str
-    email: str
-    address: str
-    designation: str
     password: str
+    email: Optional[str] = None
+    address: Optional[str] = None
+    designation: Optional[str] = None
     bank_account_no: Optional[str] = None
     bank_name: Optional[str] = None
     branch_name: Optional[str] = None
@@ -110,10 +110,10 @@ async def create_employee(
     admin_id: int = Form(...),
     full_name: str = Form(...),
     phone_no: str = Form(...),
-    email: str = Form(...),
-    address: str = Form(...),
-    designation: str = Form(...),
     password: str = Form(...),
+    email: Optional[str] = Form(None),
+    address: Optional[str] = Form(None),
+    designation: Optional[str] = Form(None),
     bank_account_no: Optional[str] = Form(None),
     bank_name: Optional[str] = Form(None),
     branch_name: Optional[str] = Form(None),
@@ -125,10 +125,10 @@ async def create_employee(
         admin_id=admin_id,
         full_name=full_name,
         phone_no=phone_no,
+        password=password,
         email=email,
         address=address,
         designation=designation,
-        password=password,
         bank_account_no=bank_account_no,
         bank_name=bank_name,
         branch_name=branch_name,
