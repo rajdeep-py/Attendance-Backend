@@ -14,6 +14,7 @@ from PIL import Image
 from sqlalchemy.exc import IntegrityError
 from fastapi import status
 from typing import Optional
+import secrets
 
 router = APIRouter()
 
@@ -69,6 +70,10 @@ class EmployeeUpdate(BaseModel):
     bank_name: str = None
     branch_name: str = None
     ifsc_code: str = None
+
+
+class EmployeeDeleteVerify(BaseModel):
+    password: str
 
 # Helper to save and compress profile photo
 async def save_profile_photo(employee_id: int, full_name: str, file: UploadFile):
@@ -230,10 +235,23 @@ async def update_employee_by_admin(
 
 # Delete employee by admin_id and employee_id
 @router.delete("/delete/employees/{employee_id}/admin/{admin_id}")
-def delete_employee(employee_id: int, admin_id: int, db: Session = Depends(get_db)):
+def delete_employee(
+    employee_id: int,
+    admin_id: int,
+    verify: EmployeeDeleteVerify,
+    db: Session = Depends(get_db),
+):
     employee = db.query(EmployeeUser).filter(EmployeeUser.employee_id == employee_id, EmployeeUser.admin_id == admin_id).first()
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
+
+    # Verify password before deleting
+    stored_password = employee.password or ""
+    if not secrets.compare_digest(stored_password, verify.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid password",
+        )
 
     cleanup_files: list[str] = []
     cleanup_dirs: list[str] = [
